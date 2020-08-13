@@ -1,5 +1,3 @@
-package coolguy;
-
 import java.util.NoSuchElementException;
 import java.util.ArrayList;
 
