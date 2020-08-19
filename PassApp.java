@@ -11,9 +11,14 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Random;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.util.stream.Collectors;
+import java.math.BigInteger;
 
 @SuppressWarnings("unchecked")
-public class PassApp {
+public class PassApp extends RSA{
 
 	//Insert into the Tree everything from letters to special characters
 	public static void insert(Tree pass){
@@ -102,18 +107,93 @@ public class PassApp {
 	}
 
 	public static void main(final String[] args) {
-		// Starting 
-		Scanner sc = new Scanner(System.in);
+		// Initial setup
+		JFrame frame = new JFrame("PassApp");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(255,190);
+		FlowLayout flow = new FlowLayout();
+ 
+		// Actual stuff you want to see
+		JPanel panel = new JPanel();
+		JLabel input = new JLabel("Enter the length of the desired password: ");
+		JTextField inputBox = new JTextField(16);
+		JLabel generatedPass = new JLabel("Generated Password");
+		JLabel encKey = new JLabel("Generate an encryption key");
+		JTextField encryptionKey = new JTextField(16);
+		JButton encrypt = new JButton("Encrypt");
+		JTextField password = new JTextField(16);
+		JLabel decKey = new JLabel("Decrypt the key that you were provided.");
+		JTextField decryptKey = new JTextField(16);
+		JButton decrypt = new JButton("Decrypt");
+		JLabel inst1 = new JLabel("1. To generate a password: enter a length for the password then hit enter, after you hit enter click generate.");
+		JLabel inst2 = new JLabel("2. To encrypt your password: complete the first step, hit encrypt.");
+		JButton submit = new JButton("Generate");
+ 
+		// Using PassApp class
 		Tree pass = new Tree();
 		insert(pass);
-
-		// Generate the password length and security
-		System.out.println("Enter the website where you are trying to make a password for: ");
-		String location = sc.nextLine();
-		System.out.println("Enter the desired password length: ");
-		int length = sc.nextInt();
-		ArrayList<Character> password = new ArrayList<Character>();
-		ArrayList<Character> passcode = new ArrayList<Character>();
-		generate(pass, length, password, passcode);
+		inputBox.addActionListener( new ActionListener ()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				int length = Integer.parseInt(inputBox.getText());
+				submit.addActionListener( new ActionListener()
+				{
+					@Override
+					public void actionPerformed(ActionEvent e)
+					{
+						ArrayList<Character> a = new ArrayList<Character>(); ArrayList<Character> b = new ArrayList<Character>();
+						generate(pass, length, a, b);
+						String genPass = b.toString().substring(1, 3*b.size()-1).replaceAll(", ", "");
+						password.setText(genPass);
+					}
+				});
+			}
+		});
+		encrypt.addActionListener( new ActionListener ()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				String pas = password.getText();
+				RSA key = new RSA();
+				BigInteger message = RSA.toBigInt(pas);
+				BigInteger encryptKey1 = RSA.encrpytMethod(message);
+				String version = RSA.toMessage(encryptKey1);
+				encryptionKey.setText(version);
+			}
+		});
+		decrypt.addActionListener ( new ActionListener ()
+		{
+			@Override 
+			public void actionPerformed(ActionEvent e)
+			{
+				String encKey = encryptionKey.getText();
+				RSA key = new RSA();
+				BigInteger encString = RSA.toBigInt(encKey);
+				BigInteger decrypted = RSA.decrypt(encString);
+				String version = RSA.toMessage(decrypted);
+				decryptKey.setText(version);
+			}
+		});
+		
+		// Adds to frame so its visible
+		panel.add(input);
+		panel.add(inputBox);
+		panel.add(generatedPass);
+		panel.add(password);
+		panel.add(encKey);
+		panel.add(encryptionKey);
+		panel.add(decKey);
+		panel.add(decryptKey);
+		flow.setHgap(35);
+		panel.add(submit);
+		panel.add(encrypt);
+		panel.add(decrypt);
+		panel.add(inst1);
+		panel.add(inst2);
+		frame.add(panel);
+		frame.setVisible(true);
 	}
 }
