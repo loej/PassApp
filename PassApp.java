@@ -106,7 +106,8 @@ public class PassApp extends RSA{
 		}
 	}
 
-	public static void main(final String[] args) {
+	//Create the GUI for PassApp
+	public static void createPassApp(){
 		// Initial setup
 		JFrame frame = new JFrame("PassApp");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -195,5 +196,10 @@ public class PassApp extends RSA{
 		panel.add(inst2);
 		frame.add(panel);
 		frame.setVisible(true);
+	}
+
+	public static void main(final String[] args) {
+		// Testing
+		createPassApp();
 	}
 }
