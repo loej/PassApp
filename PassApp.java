@@ -161,7 +161,7 @@ public class PassApp extends RSA{
 				RSA key = new RSA();
 				BigInteger message = RSA.toBigInt(pas);
 				BigInteger encryptKey1 = RSA.encrpytMethod(message);
-				String version = RSA.toMessage(encryptKey1);
+				String version = encryptKey1.toString(1);
 				encryptionKey.setText(version);
 			}
 		});
@@ -171,11 +171,12 @@ public class PassApp extends RSA{
 			public void actionPerformed(ActionEvent e)
 			{
 				String encKey = encryptionKey.getText();
+				//System.out.println(encKey);
 				RSA key = new RSA();
-				BigInteger encString = RSA.toBigInt(encKey);
-				BigInteger decrypted = RSA.decrypt(encString);
-				String version = RSA.toMessage(decrypted);
-				decryptKey.setText(version);
+				BigInteger encKey1 = encKey.toString(0);
+				BigInteger decrypted = RSA.decrypt(encKey1);
+				String original = RSA.toMessage(decrypted);
+				System.out.println(original);
 			}
 		});
 		
