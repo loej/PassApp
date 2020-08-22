@@ -23,7 +23,7 @@ public class RSA {
         d = e.modInverse(n1); //Private Key
     }
 
-    public static BigInteger[] encrpytMethod(BigInteger message){
+    public static BigInteger encrpytMethod(BigInteger message){
         return message.modPow(e, n);
     }
 
