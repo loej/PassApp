@@ -1,7 +1,12 @@
 import java.util.Random;
 import java.math.BigInteger;
+import java.security.KeyPairGenerator;
 import java.security.SecureRandom;
 import java.util.Scanner;
+
+import javax.crypto.Cipher;
+import javax.crypto.SealedObject;
+
 import java.nio.charset.StandardCharsets;
 import java.io.UnsupportedEncodingException;
 
@@ -23,7 +28,7 @@ public class RSA {
         d = e.modInverse(n1); //Private Key
     }
 
-    public static BigInteger[] encrpytMethod(BigInteger message){
+    public static BigInteger encrypt(BigInteger message){
         return message.modPow(e, n);
     }
 
@@ -42,6 +47,23 @@ public class RSA {
         newString += new String(decrypt.toByteArray());
         return newString;
     } 
+
+    public static SealedObject generateStrongEncryption(String message){
+        KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
+        KeyPair pair = kpg.generateKeyPair();
+        Cipher c = Cipher.getInstance("RSA");
+        c.init(Cipher.ENCRYPT_MODE, pair.getPublic());
+        String message = new String(message);
+        SealedObject encryptedMessage = new SealedObject(message, c);
+        return encrypedMessage;
+    }
+
+    public static String strongDecryption(SealedObject encrypted){
+        Cipher dec = Cipher.getInstance("RSA");
+        dec.init(Cipher.DECRYPT_MODE, myPair.getPrivate());
+        String original = (String) encrypted.getObject(dec);
+        return original;
+    }
 
     public static void main(String[] args) throws UnsupportedEncodingException{
         Scanner sc = new Scanner(System.in);
