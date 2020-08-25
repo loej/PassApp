@@ -79,11 +79,6 @@ public class RSA {
     }
  
     public static void main(String[] args) throws Exception{
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Enter your message: ");
-        String message = new String(sc.nextLine());
-        String cipher = strongEncrypt(message);
-        String decrypt = strongDecrypt(cipher);
-        System.out.println(message);
+       
     }
 }
