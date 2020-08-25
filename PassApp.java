@@ -16,6 +16,8 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.util.stream.Collectors;
 import java.math.BigInteger;
+import java.io.UnsupportedEncodingException;
+
 
 @SuppressWarnings("unchecked")
 public class PassApp extends RSA{
@@ -107,7 +109,7 @@ public class PassApp extends RSA{
 	}
 
 	//Create the GUI for PassApp
-	public static void createPassApp(){
+	public static void createPassApp() throws UnsupportedEncodingException{
 		// Initial setup
 		JFrame frame = new JFrame("PassApp");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -128,6 +130,7 @@ public class PassApp extends RSA{
 		JButton decrypt = new JButton("Decrypt");
 		JLabel inst1 = new JLabel("1. To generate a password: enter a length for the password then hit enter, after you hit enter click generate.");
 		JLabel inst2 = new JLabel("2. To encrypt your password: complete the first step, hit encrypt.");
+		JLabel inst3 = new JLabel("3. To decrypt to find the regular message: insert the encryption key, press enter and then press decrypt.");
 		JButton submit = new JButton("Generate");
  
 		// Using PassApp class
@@ -160,7 +163,7 @@ public class PassApp extends RSA{
 				String pas = password.getText();
 				RSA key = new RSA();
 				BigInteger message = RSA.toBigInt(pas);
-				BigInteger encryptKey1 = RSA.encrpytMethod(message);
+				BigInteger encryptKey1 = RSA.encrypt(message);
 				String version = encryptKey1.toString(1);
 				encryptionKey.setText(version);
 			}
@@ -173,10 +176,11 @@ public class PassApp extends RSA{
 				String encKey = encryptionKey.getText();
 				//System.out.println(encKey);
 				RSA key = new RSA();
-				BigInteger encKey1 = encKey.toString(0);
+				BigInteger encKey1 = RSA.toBigInt(encKey);
 				BigInteger decrypted = RSA.decrypt(encKey1);
 				String original = RSA.toMessage(decrypted);
 				System.out.println(original);
+				decryptKey.setText(original);
 			}
 		});
 		
@@ -195,11 +199,12 @@ public class PassApp extends RSA{
 		panel.add(decrypt);
 		panel.add(inst1);
 		panel.add(inst2);
+		panel.add(inst3);
 		frame.add(panel);
 		frame.setVisible(true);
 	}
 
-	public static void main(final String[] args) {
+	public static void main(final String[] args) throws UnsupportedEncodingException{
 		// Testing
 		createPassApp();
 	}

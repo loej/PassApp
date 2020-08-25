@@ -1,17 +1,21 @@
 import java.util.Random;
 import java.math.BigInteger;
-import java.security.KeyPairGenerator;
 import java.security.SecureRandom;
 import java.util.Scanner;
-
-import javax.crypto.Cipher;
-import javax.crypto.SealedObject;
-
 import java.nio.charset.StandardCharsets;
-import java.io.UnsupportedEncodingException;
+import javax.crypto.*;
+import java.util.Base64;
+import java.security.Key;
+import java.security.spec.InvalidKeySpecException;
+import javax.crypto.spec.*;
+import java.security.NoSuchAlgorithmException;
+import java.security.InvalidKeyException;
 
+import sun.misc.*;
 
 public class RSA {
+
+    // This RSA method includes for greater than ~BASE64
 
     final static SecureRandom random = new SecureRandom();
     final static BigInteger one = new BigInteger("1");
@@ -36,7 +40,7 @@ public class RSA {
         return encrpyt.modPow(d, n);
     }
 
-    public static BigInteger toBigInt(String message) throws UnsupportedEncodingException{
+    public static BigInteger toBigInt(String message) {
         BigInteger toBigInt = new BigInteger(message.getBytes());
         System.out.println("BigInt of String" + ": " + toBigInt);
         return toBigInt;
@@ -48,32 +52,38 @@ public class RSA {
         return newString;
     } 
 
-    public static SealedObject generateStrongEncryption(String message){
-        KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
-        KeyPair pair = kpg.generateKeyPair();
-        Cipher c = Cipher.getInstance("RSA");
-        c.init(Cipher.ENCRYPT_MODE, pair.getPublic());
-        String message = new String(message);
-        SealedObject encryptedMessage = new SealedObject(message, c);
-        return encrypedMessage;
+    // Both strong encryption and decryption are in Base64
+    
+    public static Key generateKey(String str) throws Exception {
+        Key key = new SecretKeySpec(str.getBytes(), "EBC");
+        return key;
+    }
+    
+    public static String strongEncrypt(String str) throws Exception, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException{
+        Key key = generateKey(str);
+        Cipher c = Cipher.getInstance("EBC");
+        c.init(Cipher.ENCRYPT_MODE, key);
+        byte[] enValue = c.doFinal(str.getBytes());
+        String encrypted = new String(Base64.getEncoder().encode(enValue));
+        return encrypted;
     }
 
-    public static String strongDecryption(SealedObject encrypted){
-        Cipher dec = Cipher.getInstance("RSA");
-        dec.init(Cipher.DECRYPT_MODE, myPair.getPrivate());
-        String original = (String) encrypted.getObject(dec);
-        return original;
+    public static String strongDecrypt(String str) throws Exception, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException{
+        Key key = generateKey(str);
+        Cipher c = Cipher.getInstance("EBC");
+        c.init(Cipher.DECRYPT_MODE, key);
+        byte[] decode = Base64.getDecoder().decode(str);
+        byte[] deValue = c.doFinal(decode);
+        String decrypted = new String(deValue);
+        return decrypted;
     }
-
-    public static void main(String[] args) throws UnsupportedEncodingException{
+ 
+    public static void main(String[] args) throws Exception{
         Scanner sc = new Scanner(System.in);
-        RSA key = new RSA();
         System.out.println("Enter your message: ");
         String message = new String(sc.nextLine());
-        BigInteger a = key.toBigInt(message);
-        BigInteger encryptionKey = key.encrpytMethod(a);
-        BigInteger decryptionKey = key.decrypt(encryptionKey);
-        String original = key.toMessage(decryptionKey);
-        System.out.println("Decrypted message from encryption key" + ": " + original);
+        String cipher = strongEncrypt(message);
+        String decrypt = strongDecrypt(cipher);
+        System.out.println(message);
     }
 }
